@@ -6,8 +6,14 @@ DB_CONFIG() {
   echo -e "\nSetting database...\n"
 
   PSQL="psql --username=freecodecamp --dbname=periodic_table -t -c"
-
   EXISTS_DB=$($PSQL "SELECT 1 FROM pg_database WHERE datname='periodic_table';")
+
+  if [[ -z $EXISTS_DB ]]
+  then
+    echo -e "\nCreating database...\n"
+    DB_CREATE=$(sudo -u postgres psql --tuples-only -c "CREATE DATABASE salon;")
+    $(sudo -u postgres psql salon < db/salon.sql)
+  fi
 
   echo -e "\nDatabase is ready!\n"
 }
@@ -16,7 +22,7 @@ DB_CONFIG
 TABLE_HANDLER() {
   if [[ -z $1 ]]
   then
-    echo "Please provide an element as an argument." 
+    echo -e "\nPlease provide an element as an argument.\n" 
     return
   fi
 
